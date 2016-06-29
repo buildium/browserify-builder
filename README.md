@@ -2,6 +2,30 @@
 
 This is a configuration tool for building multiple Browserify bundles in parallel with caching using browserify-incremental
 
+##Usage
+
+```
+let config = require('./builder.config.js');
+let createBuilder = require('browserify-builder');
+let builder = createBuilder(config);
+builder.buildAll();
+```
+
+###createBuilder api
+
+- `createBuilder(config, done)`
+  - Creates a builder object that can build the bundles configured in `config`.
+  - Can be passed a `done` function that will be called when bundling is finished
+
+###Builder api
+
+- `buildAll()`
+  - Builds all bundles
+- `buildMulti(targets)`
+  - Builds all bundles named in `targets` array
+- `buildSingle(target)`
+  - Builds bundle named in `target` argument
+
 ##Config
 
 The config object should be serializable.
@@ -82,26 +106,3 @@ The config object should be serializable.
   - Options to pass to uglify. If this is set to an object, all bundles will be minified.
   - Default `null`
  
-##Usage
-
-```
-let config = require('./builder.config.js');
-let createBuilder = require('browserify-builder');
-let builder = createBuilder(config);
-builder.buildAll();
-```
-
-###createBuilder api
-
-- `createBuilder(config, done)`
-  - Creates a builder object that can build the bundles configured in `config`.
-  - Can be passed a `done` function that will be called when bundling is finished
-
-###Builder api
-
-- `buildAll()`
-  - Builds all bundles
-- `buildMulti(targets)`
-  - Builds all bundles named in `targets` array
-- `buildSingle(target)`
-  - Builds bundle named in `target` argument
