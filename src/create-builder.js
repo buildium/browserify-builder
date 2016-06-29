@@ -16,7 +16,9 @@ var defaultConfig = {
     parallel: false,
     outputFilePattern: '[name].js',
     apps: {},
-    shared: {}
+    shared: {},
+    plugins: [],
+    transforms: []
 };
 
 var getPath = function getPathFn(pattern, mod) {
