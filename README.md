@@ -78,10 +78,10 @@ The config object should be serializable.
        - options
          - Options for the plugin
      - This should be serializable.
- - uglify
-   - Options to pass to uglify. If this is set to an object, all bundles will be minified.
-   - Default `null`
-     
+- uglify
+  - Options to pass to uglify. If this is set to an object, all bundles will be minified.
+  - Default `null`
+ 
 ##Usage
 
 ```
