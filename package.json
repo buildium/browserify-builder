@@ -22,7 +22,7 @@
   "peerDependencies": {
     "browserify": "^13.0.0",
     "browserify-incremental": "^3.1.1",
-    "watchify": "^3.7.0",
+    "watchify": "^3.0.0",
     "uglify-js": "^2.6.2"
   }
 }
