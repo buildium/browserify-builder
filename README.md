@@ -63,13 +63,13 @@ The config object should be serializable.
       - Name of the transform to be used
     - type
       - If the transform needs to be called as a function, set this to be 'function' (e.g. for using envify/custom)
-      - Default: null
+      - Default: `null`
     - params
       - Array of params to pass if type is set to `function`
       - Default: `[]`
     - options
       - Options passed to Browserify for the transform (e.g. you can pass an object with global set to true)
-      - Default: '{}'
+      - Default: `{}`
  - plugins
    - An array of Browserify plugins
      - Options
@@ -78,6 +78,9 @@ The config object should be serializable.
        - options
          - Options for the plugin
      - This should be serializable.
+ - uglify
+   - Options to pass to uglify. If this is set to an object, all bundles will be minified.
+   - Default `null`
      
 ##Usage
 
@@ -87,3 +90,18 @@ let createBuilder = require('browserify-builder');
 let builder = createBuilder(config);
 builder.buildAll();
 ```
+
+###createBuilder api
+
+- `createBuilder(config, done)`
+  - Creates a builder object that can build the bundles configured in `config`.
+  - Can be passed a `done` function that will be called when bundling is finished
+
+###Builder api
+
+- `buildAll()`
+  - Builds all bundles
+- `buildMulti(targets)`
+  - Builds all bundles named in `targets` array
+- `buildSingle(target)`
+  - Builds bundle named in `target` argument
