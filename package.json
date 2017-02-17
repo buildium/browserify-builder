@@ -16,8 +16,9 @@
   "author": "Buildium",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.11.1",
-    "mkdirp": "^0.5.1"
+    "browserify-cache-api": "3.0.1",
+    "lodash": "4.17.4",
+    "mkdirp": "0.5.1"
   },
   "peerDependencies": {
     "browserify": "^13.0.0",
