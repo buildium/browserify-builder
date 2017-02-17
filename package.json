@@ -4,7 +4,8 @@
   "description": "A tool for configuring complicated applications with Browserify",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha",
+    "coverage": "istanbul cover _mocha"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,12 @@
     "browserify-incremental": "^3.1.1",
     "watchify": "^3.0.0",
     "uglify-js": "^2.6.2"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "istanbul": "0.4.5",
+    "mocha": "3.2.0",
+    "sinon": "1.17.7",
+    "sinon-chai": "2.8.0"
   }
 }
