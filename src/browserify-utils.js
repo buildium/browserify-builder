@@ -84,7 +84,9 @@ exports.configureAppBundle = function configureAppBundle(bundler, entry, exclude
 };
 
 exports.configureSharedBundle = function configureSharedBundle(bundler, include, exclude, entry) {
-    bundler.external(exclude);
+    if (exclude) {
+        bundler.external(exclude);
+    }
     bundler.require(include);
     if (entry) {
         bundler.add(entry);

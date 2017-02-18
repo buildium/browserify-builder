@@ -24,17 +24,15 @@ var defaultConfig = {
 var getPath = function getPathFn(pattern, mod) {
     if (mod.path) {
         return mod.path;
-    } else {
-        return pattern.replace('[name]', mod.name);
     }
+    return pattern.replace('[name]', mod.name);
 };
 
 var getModuleFromTarget = curry(function getTargetFn(config, target) {
     if (config.shared[target]) {
         return extend({name: target, type: 'shared'}, config.shared[target]);
-    } else {
-        return extend({name: target, type: 'app'}, config.apps[target]);
     }
+    return extend({name: target, type: 'app'}, config.apps[target]);
 });
 
 var getSharedLibs = flow(values, map('include'), flatten);
@@ -49,6 +47,9 @@ var addFilesToBundle = curry(function addFilesToBundleFn(config, mod) {
 });
 
 var addUglify = curry(function addUglifyFn(config, mod) {
+    if (!config.uglify) {
+        return mod;
+    }
     return extend(mod, { uglify: config.uglify });
 });
 
