@@ -10,9 +10,6 @@ var incrementalWatch = require('./incremental-watch.js');
 var uglify = require('uglify-js');
 var mkdirp = require('mkdirp');
 
-var BUNDLE_COMPLETE_EVENT = 'builderComplete';
-
-
 function uglifyFile(path, options, callback) {
     var result = uglify.minify(path, options);
     fs.writeFile(path, result.code, function(err) {
@@ -21,20 +18,27 @@ function uglifyFile(path, options, callback) {
 }
 
 exports.writeBundle = function writeBundle(config) {
-    mkdirp.sync(path.dirname(config.path));
-    return config.bundle.bundle().pipe(fs.createWriteStream(config.path)).on('finish', function() {
-        console.log('Built ' + config.name);
-        if (config.uglify) {
-            uglifyFile(config.path, config.uglify, function(err) {
-                if (!err) {
-                    console.log('Minified ' + config.name);
-                }
-                config.bundle.emit(BUNDLE_COMPLETE_EVENT);
-            });
-        } else {
-            config.bundle.emit(BUNDLE_COMPLETE_EVENT);
-        }
+    var promise = new Promise(function(resolve) {
+        mkdirp(path.dirname(config.path), function(err) {
+            config.bundle.bundle()
+                .pipe(fs.createWriteStream(config.path))
+                .on('finish', function() {
+                    console.log('Built ' + config.name);
+                    if (config.uglify) {
+                        uglifyFile(config.path, config.uglify, function(err) {
+                            if (!err) {
+                                console.log('Minified ' + config.name);
+                            }
+                            resolve();
+                        });
+                    } else {
+                        resolve();
+                    }
+                });
+        });
     });
+
+    return promise;
 };
 
 exports.watchBundle = function watchBundle(config) {

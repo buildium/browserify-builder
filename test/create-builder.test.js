@@ -7,9 +7,20 @@ chai.use(require('chai-deep-match'));
 var bundlerTools = require('../src/browserify-utils');
 var createBuilder = require('../src/create-builder');
 
+var range = require('lodash/range');
+var uniqueId = require('lodash/uniqueId');
+var random = require('lodash/random');
+
 describe('create-builder', function() {
     var config,
         sandbox;
+
+    // ref: https://github.com/mochajs/mocha/issues/1128
+    var rejectionHandler = function (reason) { throw reason; }
+
+    before(function() {
+        process.on('unhandledRejection', rejectionHandler);
+    });
 
     beforeEach(function() {
         sandbox = sinon.sandbox.create();
@@ -17,6 +28,10 @@ describe('create-builder', function() {
 
     afterEach(function() {
         sandbox.restore();
+    });
+
+    after(function() {
+        process.removeListener('unhandledRejection', rejectionHandler);
     });
 
     beforeEach(function() {
@@ -298,6 +313,63 @@ describe('create-builder', function() {
             var bundles = createBuilder(config).getBundles();
             var hello = bundles[0];
             hello.uglify.should.eql(config.uglify);
+        });
+    });
+
+    describe('buildAll', function() {
+        it('should call the builder callback if provided', function(done) {
+            config.apps = {
+                one: { entry: 'one.js' },
+                two: { entry: 'two.js' },
+                three: { entry: 'three.js' }
+            };
+            config.outputFilePattern = 'test/data/generated/[name].js';
+
+            sandbox.stub(bundlerTools, 'writeBundle', function() {
+                return Promise.resolve();
+            });
+
+            var onDone = function() { done(); };
+            createBuilder(config, onDone).buildAll();
+        });
+
+        it('should call writeBundle for each app', function(done) {
+            config.apps = {
+                hello: { entry: 'world.js' },
+                foo: { entry: 'bar.js' }
+            };
+
+            sandbox.stub(bundlerTools, 'writeBundle', sandbox.spy());
+
+            createBuilder(config, function() {
+                bundlerTools.writeBundle.should.have.been.calledTwice;
+                done();
+            }).buildAll();
+        });
+
+        it('should call writeBundle sequentially for each app', function(done) {
+            config.apps = range(5).map(uniqueId).reduce(function(accumulator, current) {
+                accumulator[current] = { entry: 'foobar.js' };
+                return accumulator;
+            }, {});
+
+            var expected = Object.keys(config.apps);
+            var actual = [];
+
+            sandbox.stub(bundlerTools, 'writeBundle', function(bundle) {
+                return new Promise(function(resolve) {
+                    setTimeout(function() {
+                        actual.push(bundle.name);
+                        resolve();
+                    }, random(1, 10));
+                });
+            });
+
+            createBuilder(config, function() {
+                // chai 4.x.x => expected.should.have.same.ordered.members(actual);
+                expected.toString().should.equal(actual.toString());
+                done();
+            }).buildAll();
         });
     });
 });

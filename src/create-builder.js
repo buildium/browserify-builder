@@ -82,18 +82,6 @@ var configureModule = curry(function configureModuleFn(config, mod) {
     )(mod);
 });
 
-var allEventsFinished = curry(function onAllFinished(event, callback, emitters) {
-    var emitterCount = 0;
-    emitters.forEach(function(emitter) {
-        emitter.on(event, function() {
-            emitterCount++;
-            if (emitterCount === emitters.length) {
-                callback();
-            }
-        });
-    });
-});
-
 function createConfigureFlow(config) {
     return flow(
         getModuleFromTarget(config),
@@ -110,7 +98,6 @@ module.exports = function bundler(userConfig, onDone) {
     var config = extend(defaultConfig, userConfig);
     var targets = getTargetList(config);
     var configureTarget = createConfigureFlow(config);
-    var execOnDoneAfterFinished = allEventsFinished('builderComplete', onDone);
 
     if (config.cacheFolder) {
         mkdirp.sync(config.cacheFolder);
@@ -120,12 +107,16 @@ module.exports = function bundler(userConfig, onDone) {
         if (config.watch) {
             bundles.forEach(bundlerTools.watchBundle);
         } else {
-            if (onDone) {
-                execOnDoneAfterFinished(map('bundle', bundles));
-            }
-            bundles.forEach(bundlerTools.writeBundle);
+            var promise = Promise.resolve();
+
+            bundles.forEach(function(config) {
+                promise = promise.then(function() {
+                    return bundlerTools.writeBundle(config);
+                });
+            });
+
+            promise.then(onDone, onDone);
         }
-        return bundles;
     }
 
     exports.buildAll = function buildAll() {
@@ -136,17 +127,17 @@ module.exports = function bundler(userConfig, onDone) {
     };
 
     exports.buildSingle = function buildSingle(userTarget) {
-        return build(
+        build(
             targets
                 .filter(function(item) {
                     return item === userTarget;
                 })
                 .map(configureTarget)
-        )[0];
+        );
     };
 
     exports.buildMulti = function buildMulti(userTargets) {
-        return build(
+        build(
             targets
                 .filter(function(item) {
                     return includes(userTargets, item);
