@@ -1,10 +1,11 @@
 {
   "name": "browserify-builder",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A tool for configuring complicated applications with Browserify",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha",
+    "coverage": "istanbul cover _mocha"
   },
   "repository": {
     "type": "git",
@@ -16,13 +17,22 @@
   "author": "Buildium",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.11.1",
-    "mkdirp": "^0.5.1"
+    "browserify-cache-api": "3.0.1",
+    "lodash": "4.17.4",
+    "mkdirp": "0.5.1"
   },
   "peerDependencies": {
     "browserify": "^13.0.0",
     "browserify-incremental": "^3.1.1",
     "watchify": "^3.0.0",
     "uglify-js": "^2.6.2"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "chai-deep-match": "1.0.2",
+    "istanbul": "0.4.5",
+    "mocha": "3.2.0",
+    "sinon": "1.17.7",
+    "sinon-chai": "2.8.0"
   }
 }

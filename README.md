@@ -32,7 +32,7 @@ The config object should be serializable.
 
 ###Options
 
-- cache
+- cacheFolder
   - Relative path to folder where browserify-incremental cache will be stored
   - Default: `false`
 - parallel
@@ -59,7 +59,7 @@ The config object should be serializable.
       - options
         - Browserify options for this bundle
       - exclude
-        - Modules to exclude from bundle. 
+        - Modules to exclude from bundle.
         - Default: all modules included by bundles specified in shared bundles
     - The property name is the name of the bundle
   - Default: `{}`
@@ -105,4 +105,4 @@ The config object should be serializable.
 - uglify
   - Options to pass to uglify. If this is set to an object, all bundles will be minified.
   - Default `null`
- 
+
